@@ -1,0 +1,12 @@
+node_modules/
+package-lock.json
+.idea
+*.log
+*.png
+*.webp
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+

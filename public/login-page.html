@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Register</title>
+
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        body {
+            font-size: 120%;
+            background: #F8F8FF;
+        }
+
+        .header {
+            width: 30%;
+            margin: 50px auto 0px;
+            color: white;
+            background: #5F9EA0;
+            text-align: center;
+            border: 1px solid #B0C4DE;
+            border-bottom: none;
+            border-radius: 10px 10px 0px 0px;
+            padding: 20px;
+        }
+        form, .content {
+            width: 30%;
+            margin: 0px auto;
+            padding: 20px;
+            border: 1px solid #B0C4DE;
+            background: white;
+            border-radius: 0px 0px 10px 10px;
+        }
+        .input-group {
+            margin: 10px 0px 10px 0px;
+        }
+        .input-group label {
+            display: block;
+            text-align: left;
+            margin: 3px;
+        }
+        .input-group input {
+            height: 30px;
+            width: 93%;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid gray;
+        }
+        .btn {
+            padding: 10px;
+            font-size: 15px;
+            color: white;
+            background: #5F9EA0;
+            border: none;
+            border-radius: 5px;
+        }
+        .error {
+            width: 92%;
+            margin: 0px auto;
+            padding: 10px;
+            border: 1px solid #a94442;
+            color: #a94442;
+            background: #f2dede;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        .success {
+            color: #3c763d;
+            background: #dff0d8;
+            border: 1px solid #3c763d;
+            margin-bottom: 20px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="header">
+    <h2>Register</h2>
+</div>
+
+<form method="POST" id="register-form" action="/">
+    <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" required="">
+    </div>
+    <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" required="">
+    </div>
+    <div class="input-group">
+        <button type="submit" class="btn" name="reg_user">Register</button>
+    </div>
+    <p class="error d-none"></p>
+    <p class="token d-none"></p>
+</form>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    const registerForm = document.getElementById("register-form");
+    registerForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        this.querySelector(".error").textContent = "";
+        this.querySelector(".error").classList.add("d-none");
+        const data = {
+            email: this.querySelector("[name=email]").value,
+            password: this.querySelector("[name=password]").value
+        };
+
+        const authOptions = {
+            method: this.getAttribute("method"),
+            url: this.getAttribute("action"),
+            data: JSON.stringify(data),
+        };
+
+        const form = this;
+        console.log(authOptions)
+        axios(authOptions)
+            .then(function(response) {
+                console.log(response.data);
+                if (response.data.status === "Success") {
+                    form.querySelector(".error").textContent = "";
+                    form.querySelector(".error").classList.add("d-none");
+                    form.querySelector(".token").classList.remove("d-none");
+                    form.querySelector(".token").textContent = `Ваш токен - ${response.data.token}`;
+                } else {
+                    form.querySelector(".error").classList.remove("d-none");
+                    form.querySelector(".error").textContent = `Произошла ошибка - ${response.data.text}`;
+                }
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    })
+
+</script>
+
+</body>
+</html>
