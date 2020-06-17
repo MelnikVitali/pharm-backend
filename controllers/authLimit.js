@@ -2,7 +2,10 @@ const rateLimit = require("express-rate-limit");
 
 module.exports = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 15,
-    message:
-        `You've made too many failed attempts in a short period of time, please try again after 15 minutes`,
+    max: 5,
+    statusCode: 429,
+    message: {
+        limit: 'Слишком много аккаунтов создано с этого IP, повторите попытку через 15 минут'
+    }
+
 });

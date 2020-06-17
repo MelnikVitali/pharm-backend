@@ -7,7 +7,7 @@ module.exports = function validateRegisterInput(data) {
     data.name = !isEmpty(data.name) ? data.name : '';
     data.email = !isEmpty(data.email) ? data.email : '';
     data.password = !isEmpty(data.password) ? data.password : '';
-    data.password_confirm = !isEmpty(data.password_confirm) ? data.password_confirm : '';
+    data.password2 = !isEmpty(data.password2) ? data.password2 : "";
 
     if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
         errors.name = 'Имя должно быть не менее двух символов';
@@ -33,20 +33,20 @@ module.exports = function validateRegisterInput(data) {
         errors.password = 'Укажите пароль';
     }
 
-    if (!Validator.isLength(data.password_confirm, { min: 6, max: 30 })) {
-        errors.password_confirm = 'Пароль должен состоять не менее чем из 6 символов';
+    if (!Validator.isLength(data.password2, { min: 6, max: 30 })) {
+        errors.password2  = 'Пароль должен состоять не менее чем из 6 символов';
     }
 
-    if (!Validator.equals(data.password, data.password_confirm)) {
-        errors.password_confirm = 'Пароли не совпадают';
+    if (!Validator.equals(data.password, data.password2)) {
+        errors.password2  = 'Пароли не совпадают';
     }
 
-    if (Validator.isEmpty(data.password_confirm)) {
-        errors.password_confirm = 'Повторите пароль';
+    if (Validator.isEmpty(data.password2)) {
+        errors.password2 = 'Повторите пароль';
     }
 
     return {
         errors,
         isValid: isEmpty(errors)
-    }
-}
+    };
+};

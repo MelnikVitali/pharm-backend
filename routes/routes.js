@@ -40,6 +40,17 @@ const getAllIImages = require('./image/getAllImages');
 const getImageById = require('./image/getImageById');
 const deleteImage = require('./image/deleteImage');
 
+//Posts
+const getAllPosts = require('./posts/getAllPosts');
+const addPost = require('./posts/addPost');
+const getPostById = require('./posts/getPostById');
+const editPost = require('./posts/editPost');
+const deletePost = require('./posts/deletePost');
+
+//Comments
+const addComment = require('./comments/addComment');
+const deleteComment = require('./comments/deleteComment');
+
 
 module.exports = app => {
     //auth
@@ -84,4 +95,17 @@ module.exports = app => {
     getAllIImages(app);
     getImageById(app);
     deleteImage(app);
+
+    //Posts
+    getAllPosts(app);
+    addPost(app);
+    getPostById(app);
+    editPost(app);
+    deletePost(app);
+
+    //Comments
+    addComment(app);
+    deleteComment(app);
 };
+
+

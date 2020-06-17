@@ -1,5 +1,4 @@
 const auth = require("../../controllers/auth");
-const checkDuplicateUsernameOrEmail = require("../../middlewares/checkDuplicateUsernameOrEmail");
 
 module.exports = (app) => {
     app.get("/register", async (req, res) => {
@@ -7,8 +6,5 @@ module.exports = (app) => {
         }
     );
 
-    app.post("/register",
-        checkDuplicateUsernameOrEmail,
-        auth.signUp);
-
-  }
+    app.post("/register", auth.signUp);
+};
