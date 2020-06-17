@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const gravatar = require('gravatar');
 
 const authHelper = require('../helpers/authHelper');
 
@@ -12,11 +11,11 @@ const Token = require('../models/login/Token');
 const validateRegisterInput = require('../utils/validation/register');
 const validateLoginInput = require('../utils/validation/login');
 
-const updateTokens = (userId) => {
-    const accessToken = authHelper.generatorAccessToken(userId);
-    const refreshToken = authHelper.generatorRefreshToken();
+const updateTokens = (userId, userName) => {
+    const accessToken = authHelper.generatorAccessToken(userId, userName);
+    const refreshToken = authHelper.generatorRefreshToken(userName);
 
-    authHelper.replaceDbRefreshToken(refreshToken.id, userId);
+    authHelper.replaceDbRefreshToken(refreshToken.id, userId );
 
     return {
         accessToken,
@@ -25,7 +24,8 @@ const updateTokens = (userId) => {
 };
 
 const signUp = async (req, res) => {
-    let { name, email, password } = req.body;
+    let { name, email, password, password2 } = req.body;
+    email = email && email.toLowerCase();
 
     const { errors, isValid } = validateRegisterInput(req.body);
 
@@ -33,55 +33,57 @@ const signUp = async (req, res) => {
         return res.status(400).json(errors);
     }
 
-    const avatar = gravatar.url(req.body.email, {
-        s: '200',
-        r: 'pg',
-        d: 'mm'
-    });
-
     try {
-        const newUser = new User({
-            name,
-            email,
-            password,
-            avatar
-        });
+        const user = await User.findOne({ email });
 
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(newUser.password, salt, async (err, hash) => {
-                if (err) throw err;
-                newUser.password = hash;
+        if (user) {
+            errors.email = "Пользователь с таким email уже зарегистрирован!";
 
-                try {
-                    const user = await newUser.save();
-
-                    const payload = {
-                        id: user._id,
-                        name: user.name,
-                        email: user.email,
-                        password: user.password,
-                        avatar
-                    };
-
-                    jwt.sign(
-                        payload,
-                        secret,
-                        { expiresIn: 3600 * 24 * 30 },
-                        (err, token) => {
-                            res.cookie("jwt", token);
-
-                            return res.json({
-                                "status": "Success",
-                                token,
-                                user: payload
-                            });
-                        }
-                    );
-                } catch (e) {
-                    return res.json({ error: 'Error occurred while generating token' });
-                }
+            return res.status(400).json(errors);
+        } else {
+            if (password !== password2) {
+                errors.password2 = "Пароли не совпадают!";
+                return res.status(400).json(errors);
+            }
+            const newUser = new User({
+                name,
+                email,
+                password,
             });
-        });
+
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newUser.password, salt, async (err, hash) => {
+                    if (err) throw err;
+                    newUser.password = hash;
+
+                    try {
+                        const user = await newUser.save();
+
+                        const payload = {
+                            userId: user._id,
+                            name: user.name,
+                            email: user.email,
+                            password: user.password,
+                        };
+
+                        jwt.sign(
+                            payload,
+                            secret,
+                            { expiresIn: 3600 * 24 * 30 },
+                            (err, token) => {
+                                return res.json({
+                                    "status": "Success",
+                                    accessToken: token,
+                                    user: payload
+                                });
+                            }
+                        );
+                    } catch (e) {
+                        return res.json({ error: 'Error occurred while generating token' });
+                    }
+                });
+            });
+        }
     } catch (e) {
         return res.send({ error: "Could not create token" });
     }
@@ -99,32 +101,32 @@ const signIn = async (req, res) => {
         const user = await User.findOne({ email }).exec();
 
         if (!user) {
+            errors.email = "Пользователя с таким email не найдено!";
+
             return res
                 .status(404)
-                .send({
-                    message: "User Not found."
-                });
+                .json(errors);
         }
 
         try {
             const isMatch = await bcrypt.compare(password, user.password);
 
             if (isMatch) {
-                const tokens = await updateTokens(user._id);
+                const tokens = await updateTokens(user._id, user.name);
+
+                res.cookie('refreshToken', tokens.refreshToken);
 
                 return res.json({
-
                     status: 'Success',
-                    tokens
+                    accessToken: tokens.accessToken
                 });
+
             } else {
+                errors.password = "Неправильный пароль!"
+
                 return res
                     .status(401)
-                    .json({
-                        status: 'Error',
-                        accessToken: null,
-                        message: 'Invalid Password!'
-                    });
+                    .json(errors);
             }
         } catch (err) {
             return res
@@ -145,13 +147,12 @@ const signIn = async (req, res) => {
 };
 
 const refreshTokens = async (req, res) => {
-    const { refreshToken } = req.body;
-    console.log(refreshToken);
+    const refreshToken = req.cookies.refreshToken;
+
     let payload;
 
     try {
         payload = jwt.verify(refreshToken, secret);
-        console.log(payload);
 
         if (payload.type !== 'refresh') {
             return res
@@ -186,9 +187,11 @@ const refreshTokens = async (req, res) => {
             throw new Error('Invalid token!');
         }
 
-        const tokens = updateTokens(token.userId);
+        const tokens = updateTokens(token.userId, payload.name);
 
-        res.json(tokens);
+        res.cookie('refreshToken', tokens.refreshToken);
+
+        res.json({ accessToken: tokens.accessToken });
     } catch (err) {
         return res
             .status(400).json({

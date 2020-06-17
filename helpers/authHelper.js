@@ -4,21 +4,22 @@ const { tokens, secret } = require('../configs/db').jwt;
 
 const Token = require('../models/login/Token');
 
-const generatorAccessToken = (userId ) => {
+const generatorAccessToken = (userId, userName) => {
     const payload = {
         userId,
+        name: userName,
         type: tokens.access.type,
     };
 
     const options = { expiresIn: tokens.access.expiresIn };
-    console.log(options);
 
     return jwt.sign(payload, secret, options);
 };
 
-const generatorRefreshToken = () => {
+const generatorRefreshToken = (userName) => {
     const payload = {
         id: uuid(),
+        name: userName,
         type: tokens.refresh.type
     };
 
@@ -30,8 +31,8 @@ const generatorRefreshToken = () => {
     };
 };
 
-const replaceDbRefreshToken = async (tokenId, userId) => {
-    Token.findOne({ userId })
+const replaceDbRefreshToken = (tokenId, userId) => {
+    Token.findOneAndRemove({ userId })
         .exec()
         .then(() => Token.create({ tokenId, userId }));
 };

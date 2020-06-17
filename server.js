@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
 
 const routes = require('./routes/routes');
 const configPassport = require('./configs/passport');
@@ -19,6 +20,7 @@ configPassport(passport);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(express.static(__dirname + '/public'));
 
 // const db = require('./configs/db').mongoURI;
