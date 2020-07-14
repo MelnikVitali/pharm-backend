@@ -15,9 +15,11 @@ module.exports = (app) => {
 
             try {
                 newPost = await newPost.save();
+
                 return res.json(newPost);
             } catch (err) {
                 const errors = { error: "Ошибка при создании поста" };
+
                 return res.status(400).json(errors);
             }
         }

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const passport = require('passport');
+require('dotenv').config(); //to use env variables
 const cookieParser = require('cookie-parser');
 
 const routes = require('./routes/routes');
@@ -18,13 +19,17 @@ app.use(passport.session());
 configPassport(passport);
 
 app.use(cors());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(cookieParser());
+
 app.use(express.static(__dirname + '/public'));
 
 // const db = require('./configs/db').mongoURI;
-const db = 'mongodb://localhost/final-pharm';
+// const db = 'mongodb://localhost/final-pharm';
+const db = process.env.DB_CONNECT;
 
 mongoose.connect(db, {
     useNewUrlParser: true,
@@ -34,7 +39,7 @@ mongoose.connect(db, {
 });
 
 mongoose.connection.on('error', (err) => {
-    console.log('Connection error:', err)
+    console.error('Connection error:', err)
 });
 
 mongoose.connection.once('open', () => {

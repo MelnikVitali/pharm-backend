@@ -18,9 +18,11 @@ module.exports = (app) => {
                         }
                     })
                     .sort({ date: -1 });
+
                 return res.json(posts);
             } catch (e) {
                 const errors = { error: apiError };
+
                 return res.status(400).json(errors);
             }
         });

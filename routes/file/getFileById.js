@@ -8,7 +8,7 @@ module.exports = (app) => {
 
             if (result === null) {
                 const errorMessage = `File with _id: ${req.params.id} not found!`;
-                console.log(errorMessage);
+                console.error(errorMessage);
 
                 return res
                     .status(400)

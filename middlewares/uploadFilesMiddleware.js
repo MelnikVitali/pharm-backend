@@ -77,7 +77,6 @@ const saveFiles = async (req, res, next) => {
                 console.log(`'Rejected': A file with the same name already exists!`);
 
                 return Promise.reject({
-                    status: 'Rejected',
                     reason: `A file with the same name ${file.originalname} already exists.`,
                     fileName: file.originalname,
                     fileType: file.originalname.split('.').pop(),
@@ -128,12 +127,11 @@ const saveFiles = async (req, res, next) => {
 
     if (rejectedFiles.length === req.files.length) {
         const errorMessage = `All files with such names already exist!`;
-        console.log(errorMessage);
+        console.error(errorMessage);
 
         return res
             .status(400)
             .json({
-                status: 'Error',
                 error: errorMessage
             });
     }

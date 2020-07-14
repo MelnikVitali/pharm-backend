@@ -11,12 +11,6 @@ const Post = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment"
-    }
-  ],
   date: {
     type: Date,
     default: Date.now
