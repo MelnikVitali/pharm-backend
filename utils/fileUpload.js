@@ -7,8 +7,9 @@ const saveDocuments = async (file) => {
         file.buffer,
         (err) => {
             if (err) {
-                console.log(err);
+                console.error(err);
             }
+
             console.log(`The file ${file.originalname} was successfully  saved`);
         });
 

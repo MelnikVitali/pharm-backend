@@ -2,13 +2,8 @@
 const register = require('./login/register');
 const { login, refreshToken } = require('./login/login');
 const current = require('./login/current');
-
-//language
-const addLanguage = require('./language/addLanguage');
-const deleteLanguage = require('./language/deleteLanguage');
-const getLanguages = require('./language/getLanguages');
-const updateLanguage = require('./language/updateLanguage');
-const setLanguage = require('./language/setLanguage');
+const forgotPassword = require('./login/forgotPassword');
+const resetPassword = require('./login/resetPassword');
 
 //Menu
 const getAllMenus = require('./menus/getAllMenus');
@@ -47,24 +42,14 @@ const getPostById = require('./posts/getPostById');
 const editPost = require('./posts/editPost');
 const deletePost = require('./posts/deletePost');
 
-//Comments
-const addComment = require('./comments/addComment');
-const deleteComment = require('./comments/deleteComment');
-
-
 module.exports = app => {
     //auth
     login(app);
     refreshToken(app);
     current(app);
     register(app);
-
-    //language
-    addLanguage(app);
-    deleteLanguage(app);
-    getLanguages(app);
-    updateLanguage(app);
-    setLanguage(app);
+    forgotPassword(app);
+    resetPassword(app);
 
     //Menu
     getAllMenus(app);
@@ -102,10 +87,6 @@ module.exports = app => {
     getPostById(app);
     editPost(app);
     deletePost(app);
-
-    //Comments
-    addComment(app);
-    deleteComment(app);
 };
 
 

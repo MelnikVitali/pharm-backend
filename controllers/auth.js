@@ -1,9 +1,13 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+const emailSignUp = require('../configs/emailSignUp')
+const emailForgotPassword = require('../configs/emailForgotPassword')
+const transporter = require('../configs/sendMail');
+
 const authHelper = require('../helpers/authHelper');
 
-const { secret } = require('../configs/db').jwt;
+const { tokens } = require('../configs/db').jwt;
 
 const User = require('../models/User');
 const Token = require('../models/login/Token');
@@ -15,7 +19,7 @@ const updateTokens = (userId, userName) => {
     const accessToken = authHelper.generatorAccessToken(userId, userName);
     const refreshToken = authHelper.generatorRefreshToken(userName);
 
-    authHelper.replaceDbRefreshToken(refreshToken.id, userId );
+    authHelper.replaceDbRefreshToken(refreshToken.id, userId);
 
     return {
         accessToken,
@@ -24,7 +28,8 @@ const updateTokens = (userId, userName) => {
 };
 
 const signUp = async (req, res) => {
-    let { name, email, password, password2 } = req.body;
+
+    let { name, email, password, confirmPassword } = req.body;
     email = email && email.toLowerCase();
 
     const { errors, isValid } = validateRegisterInput(req.body);
@@ -41,19 +46,25 @@ const signUp = async (req, res) => {
 
             return res.status(400).json(errors);
         } else {
-            if (password !== password2) {
+            if (password !== confirmPassword) {
                 errors.password2 = "Пароли не совпадают!";
+
                 return res.status(400).json(errors);
             }
             const newUser = new User({
                 name,
                 email,
                 password,
+                activateAccount: false
+
             });
 
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.password, salt, async (err, hash) => {
-                    if (err) throw err;
+                    if (err) {
+                        throw err
+                    }
+
                     newUser.password = hash;
 
                     try {
@@ -63,31 +74,75 @@ const signUp = async (req, res) => {
                             userId: user._id,
                             name: user.name,
                             email: user.email,
-                            password: user.password,
                         };
+
 
                         jwt.sign(
                             payload,
-                            secret,
-                            { expiresIn: 3600 * 24 * 30 },
-                            (err, token) => {
-                                return res.json({
-                                    "status": "Success",
-                                    accessToken: token,
-                                    user: payload
+                            process.env.TOKEN_SECRET,
+                            { expiresIn: tokens.accessSignUp.expiresIn },
+                            async (err, token) => {
+                                await transporter.sendMail(emailSignUp(email, token), (error, response) => {
+                                    if (error) {
+                                        return res.json({
+                                            errorSignUp: error.message
+                                        })
+                                    } else {
+                                        console.log('here is the res: ', response);
+                                        res.status(200).json({ message: 'Письмо подтверждения регистрации отправлено на указанный email. Для входа в аккаунт, пожалуйста активируйте свою учетную запись!' });
+                                    }
                                 });
                             }
                         );
                     } catch (e) {
-                        return res.json({ error: 'Error occurred while generating token' });
+                        return res.json({ errorSignUp: 'Произошла ошибка при создании токена' });
                     }
                 });
             });
         }
     } catch (e) {
-        return res.send({ error: "Could not create token" });
+        return res.send({ error: "Не удалось создать токен" });
     }
 };
+
+const activateAccount = async (req, res) => {
+    const { token } = req.body;
+    if (token) {
+        jwt.verify(token, process.env.TOKEN_SECRET, (error, decodedToken) => {
+            if (error) {
+                return res
+                    .status(400)
+                    .json({
+                        error: `Неверная или просроченная ссылка активации.  Contact to: <${process.env.EMAIL_FROM}>`
+
+                    });
+            }
+
+            const { email } = decodedToken;
+
+            User.findOne({ email }).exec((error, user) => {
+                if (error) {
+                    console.log("Error in signup while account activation: ", error);
+
+                    return res.status(400).json({ error: "Невалидная ссылка" });
+                }
+
+                return user.updateOne({ confirmed: true }, async (err, success) => {
+                    if (err) {
+                        console.error("Error in signup while account activation: ", error);
+
+                        return res.status(400).json({ error: 'Ошибка активации аккаунта' });
+                    }
+                    res.json({
+                        message: `Регистрация через электронное письмо - прошла успешно!  Contact to: <${process.env.EMAIL_FROM}>`
+                    })
+                })
+            });
+        });
+    } else {
+        return res.json({ error: 'Something went wrong!' })
+    }
+}
 
 const signIn = async (req, res) => {
     const { email, password } = req.body;
@@ -101,10 +156,18 @@ const signIn = async (req, res) => {
         const user = await User.findOne({ email }).exec();
 
         if (!user) {
-            errors.email = "Пользователя с таким email не найдено!";
+            errors.error = "Неверный логин или пароль";
 
             return res
-                .status(404)
+                .status(400)
+                .json(errors);
+        }
+
+        if (user.confirmed === false) {
+            errors.error = "Аккаунт не активирован через электронную почту";
+
+            return res
+                .status(400)
                 .json(errors);
         }
 
@@ -122,10 +185,10 @@ const signIn = async (req, res) => {
                 });
 
             } else {
-                errors.password = "Неправильный пароль!"
+                errors.error = "Неверный логин или пароль"
 
                 return res
-                    .status(401)
+                    .status(400)
                     .json(errors);
             }
         } catch (err) {
@@ -146,17 +209,81 @@ const signIn = async (req, res) => {
     }
 };
 
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    if (email === '') {
+        res.status(400).send('email required');
+    }
+
+    User.findOne({ email }, (err, user) => {
+        if (err || !user) {
+            return res.status(400).json({ error: 'Пользователь с таким email не найден.' });
+        }
+
+        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: '20m' });
+
+        return user.updateOne({ resetLink: token }, async (err, success) => {
+            if (err) {
+                return res.status(400).json({ error: 'Reset password link error' });
+            }
+
+            console.log('sending mail');
+
+            await transporter.sendMail(emailForgotPassword(email, token), (error, response) => {
+                if (error) {
+                    return res.json({
+                        error: error.message
+                    })
+                } else {
+                    res.status(200).json({ message: 'Письмо для сброса пароля отправлено на указанный email, пожалуйста, активируйте свою учетную запись' });
+                }
+            });
+        });
+    });
+};
+
+const resetPassword = (req, res) => {
+    const { resetLink, newPassword } = req.body;
+    if (resetLink) {
+        jwt.verify(resetLink, process.env.TOKEN_SECRET, async (error, decodedData) => {
+            if (error) {
+                return res.status(400).json({ error: 'Невалидная ссылка!' });
+            }
+            await User.findOne({ resetLink }, async (error, user) => {
+                if (error || !user) {
+                    return res.status(400).json({ error: `Пользователь не найден.` });
+                }
+                await bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(newPassword, salt, async (err, hash) => {
+                        await user.updateOne({
+                            password: hash,
+                            resetLink: null,
+                        })
+
+                    });
+                });
+            })
+                .then(() => {
+                    console.log('password updated');
+                    res.status(200).send({ message: `Ваш пароль успешно обновлен. Contact to: <${process.env.EMAIL_FROM}>` })
+                });
+        });
+    } else {
+        return res.status(401).json({ error: 'Ошибка аутендификации' });
+    }
+};
+
 const refreshTokens = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
     let payload;
 
     try {
-        payload = jwt.verify(refreshToken, secret);
+        payload = jwt.verify(refreshToken, process.env.TOKEN_SECRET);
 
         if (payload.type !== 'refresh') {
             return res
-                .status(400)
+                .status(401)
                 .json({
                     status: 'Error',
                     message: 'Invalid token!'
@@ -165,14 +292,14 @@ const refreshTokens = async (req, res) => {
     } catch (err) {
         if (err instanceof jwt.TokenExpiredError) {
             return res
-                .status(400)
+                .status(401)
                 .json({
                     status: 'Error',
                     message: 'Token expired!'
                 });
         } else if (err instanceof jwt.JsonWebTokenError) {
             return res
-                .status(400)
+                .status(401)
                 .json({
                     status: 'Error',
                     message: 'Invalid token!'
@@ -184,7 +311,12 @@ const refreshTokens = async (req, res) => {
         const token = await Token.findOne({ tokenId: payload.id }).exec();
 
         if (token === null) {
-            throw new Error('Invalid token!');
+            return res
+                .status(401)
+                .json({
+                    status: 'Error',
+                    message: 'Invalid token!'
+                });
         }
 
         const tokens = updateTokens(token.userId, payload.name);
@@ -194,7 +326,7 @@ const refreshTokens = async (req, res) => {
         res.json({ accessToken: tokens.accessToken });
     } catch (err) {
         return res
-            .status(400).json({
+            .status(401).json({
                 status: 'Error',
                 message: err.message
             });
@@ -202,6 +334,9 @@ const refreshTokens = async (req, res) => {
 };
 
 module.exports = {
+    activateAccount,
+    resetPassword,
+    forgotPassword,
     refreshTokens,
     signUp,
     signIn

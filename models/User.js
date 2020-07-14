@@ -4,20 +4,27 @@ const userSchema = new Schema({
     name: {
         type: String,
         trim: true,
-        required: true
+        required: true,
+        max: 64
     },
-    email:{
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true
+    },
+    password: {
         type: String,
         required: true
     },
-    password:{
-        type: String,
-        required: true
+    confirmed: {
+        type: Boolean,
+        default: false
     },
-    date: {
-        type: Date,
-        default: Date.now
+    resetLink: {
+        data: String,
+        default: ''
     }
-});
+}, { timestamps: true });
 
 module.exports = model('User', userSchema);

@@ -1,6 +1,7 @@
 const uuid = require('uuid').v4;
 const jwt = require('jsonwebtoken');
-const { tokens, secret } = require('../configs/db').jwt;
+
+const { tokens } = require('../configs/db').jwt;
 
 const Token = require('../models/login/Token');
 
@@ -13,7 +14,7 @@ const generatorAccessToken = (userId, userName) => {
 
     const options = { expiresIn: tokens.access.expiresIn };
 
-    return jwt.sign(payload, secret, options);
+    return jwt.sign(payload, process.env.TOKEN_SECRET, options);
 };
 
 const generatorRefreshToken = (userName) => {
@@ -27,7 +28,7 @@ const generatorRefreshToken = (userName) => {
 
     return {
         id: payload.id,
-        token: jwt.sign(payload, secret, options)
+        token: jwt.sign(payload, process.env.TOKEN_SECRET, options)
     };
 };
 

@@ -10,8 +10,9 @@ const resizeAndSaveImages = async (file) => {
         .toFile(`./public/uploads/images/${newFileId}.webp`,
             (err, data) => {
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                 }
+
                 console.log(`The file ${newFileId} was compressed with extension .${data.format} and saved`);
             });
 
@@ -21,7 +22,7 @@ const resizeAndSaveImages = async (file) => {
         .toFile(`./public/uploads/images/${newFileId}.png`,
             (err, data) => {
                 if (err) {
-                    console.log(err);
+                    console.error(err);
                 }
                 console.log(`The file ${newFileId} was compressed with extension .${data.format} and saved`);
             });
