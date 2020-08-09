@@ -123,7 +123,7 @@ const saveFiles = async (req, res, next) => {
             default:
                 return file;
         }
-    })
+    });
 
     if (rejectedFiles.length === req.files.length) {
         const errorMessage = `All files with such names already exist!`;
@@ -163,7 +163,7 @@ const saveFiles = async (req, res, next) => {
         await res.json({
             status: 'Success',
             saved: [ ...resultFiles, ...resultImages ],
-            rejected: [...rejectedFiles]
+            rejected: [ ...rejectedFiles ]
         });
     } catch (err) {
         await res.send({

@@ -7,6 +7,7 @@ const apiError = "Ошибка при запросе к API";
 module.exports = (app) => {
     app.put(
         "/posts/:id",
+        passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             try {
                 let post = await Post.findOne({ _id: req.params.id });
@@ -31,12 +32,16 @@ module.exports = (app) => {
                 } else {
                     const errors = { error: "Пост не найден" };
 
-                    return res.status(404).json({ errors });
+                    return res
+                        .status(404)
+                        .json({ errors });
                 }
             } catch (e) {
                 const errors = { error: apiError };
 
-                return res.status(404).json({ errors });
+                return res
+                    .status(404)
+                    .json({ errors });
             }
         }
     );

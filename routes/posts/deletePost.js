@@ -5,6 +5,7 @@ const Post = require('../../models/Post');
 module.exports = (app) => {
     app.delete(
         "/posts/:id",
+        passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             const post = await Post.findOne({ _id: req.params.id });
 

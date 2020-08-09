@@ -20,7 +20,9 @@ module.exports = (app) => {
             } catch (err) {
                 const errors = { error: "Ошибка при создании поста" };
 
-                return res.status(400).json(errors);
+                return res
+                    .status(400)
+                    .json(errors);
             }
         }
     );

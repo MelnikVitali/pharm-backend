@@ -1,5 +1,5 @@
-const auth = require('../../controllers/auth');
+const resetPassword = require('../../controllers/auth/resetPassword');
 
 module.exports = (app) => {
-    app.put("/reset-password", auth.resetPassword);
+    app.put("/reset-password", resetPassword);
 };

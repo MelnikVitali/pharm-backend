@@ -1,7 +1,5 @@
-const auth = require("../../controllers/auth");
+const signUp = require("../../controllers/auth/signUp");
 
 module.exports = (app) => {
-    app.post("/register", auth.signUp);
-
-    app.post("/email-activation", auth.activateAccount);
+    app.post("/register", signUp);
 };
