@@ -8,6 +8,10 @@ const imageSchema = new Schema({
     originalName: {
         type: String,
         required: true
+    },
+    base64: {
+        type: String,
+        required: true
     }
 });
 
