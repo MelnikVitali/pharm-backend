@@ -2,7 +2,7 @@ const Image = require("../../models/Image");
 const passport = require("passport");
 
 module.exports = (app) => {
-    app.get('/images',
+    app.get('/media',
         passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             try {
