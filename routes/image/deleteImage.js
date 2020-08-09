@@ -6,7 +6,7 @@ const Image = require('../../models/Image');
 const uploadUrls = require('../../constans/uploadUrls');
 
 module.exports = (app) => {
-    app.delete('/images/:id',
+    app.delete('/media/:id',
         passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             try {
