@@ -27,8 +27,6 @@ app.use(cookieParser());
 
 app.use(express.static(__dirname + '/public'));
 
-// const db = require('./configs/db').mongoURI;
-// const db = 'mongodb://localhost/final-pharm';
 const db = process.env.DB_CONNECT;
 
 mongoose.connect(db, {
@@ -53,4 +51,3 @@ mongoose.connection.once('open', () => {
         console.log(`Оно живо! PORT=${PORT}`, new Date());
     });
 });
-

@@ -25,12 +25,16 @@ module.exports = (app) => {
                 } else {
                     const errors = { error: "Пост не найден" };
 
-                    return res.status(404).json(errors);
+                    return res
+                        .status(404)
+                        .json(errors);
                 }
             } catch (err) {
                 const errors = { error: "Ошибка при запросе к API" };
 
-                return res.status(400).json(errors);
+                return res
+                    .status(400)
+                    .json(errors);
             }
         });
 };

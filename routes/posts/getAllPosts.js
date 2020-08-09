@@ -23,7 +23,9 @@ module.exports = (app) => {
             } catch (e) {
                 const errors = { error: apiError };
 
-                return res.status(400).json(errors);
+                return res
+                    .status(400)
+                    .json(errors);
             }
         });
 };

@@ -1,9 +1,15 @@
 //auth
 const register = require('./login/register');
-const { login, refreshToken } = require('./login/login');
+const activationAccount = require('./login/emailActivation');
+const repeatActivateAccount = require('./login/repeatEmailActivation');
+const signIn = require('./login/signIn');
+const refreshToken = require('./login/refreshToken');
+const logout = require('./login/logout');
 const current = require('./login/current');
 const forgotPassword = require('./login/forgotPassword');
 const resetPassword = require('./login/resetPassword');
+const googleLogin = require('./login/googleLogin');
+const facebookLogin = require('./login/facebookLogin');
 
 //Menu
 const getAllMenus = require('./menus/getAllMenus');
@@ -44,10 +50,15 @@ const deletePost = require('./posts/deletePost');
 
 module.exports = app => {
     //auth
-    login(app);
+    signIn(app);
+    logout(app);
+    googleLogin(app);
+    facebookLogin(app);
     refreshToken(app);
     current(app);
     register(app);
+    activationAccount(app);
+    repeatActivateAccount(app);
     forgotPassword(app);
     resetPassword(app);
 

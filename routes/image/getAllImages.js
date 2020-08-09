@@ -1,20 +1,18 @@
 const Image = require("../../models/Image");
+const passport = require("passport");
 
 module.exports = (app) => {
-    app.get('/images', async (req, res) => {
+    app.get('/images',
+        passport.authenticate("jwt", { session: false }),
+        async (req, res) => {
+            try {
+                const result = await Image.find(req.query);
 
-        try {
-            const result = await Image.find(req.query);
-
-            res.send({
-                status: 'Success',
-                result: result
-            });
-        } catch (err) {
-            res.send({
-                status: 'Error',
-                message: err
-            });
-        }
-    });
+                res.send(result);
+            } catch (err) {
+                res
+                    .status(500)
+                    .send({ error: 'Error while getting list of images' });
+            }
+        });
 };

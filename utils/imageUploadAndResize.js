@@ -1,13 +1,15 @@
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 
+const uploadUrls = require('./../constans/uploadUrls');
+
 const resizeAndSaveImages = async (file) => {
     const newFileId = uuidv4();
 
     await sharp(file.buffer)
         // .resize(640, 320)
         .webp({ lossless: true })
-        .toFile(`./public/uploads/images/${newFileId}.webp`,
+        .toFile(`${uploadUrls.imageUploadUrl}/${newFileId}.webp`,
             (err, data) => {
                 if (err) {
                     console.error(err);
@@ -17,9 +19,9 @@ const resizeAndSaveImages = async (file) => {
             });
 
     await sharp(file.buffer)
-        .resize(640, 320)
+        // .resize(640, 320)
         .png()
-        .toFile(`./public/uploads/images/${newFileId}.png`,
+        .toFile(`${uploadUrls.imageUploadUrl}/${newFileId}.png`,
             (err, data) => {
                 if (err) {
                     console.error(err);

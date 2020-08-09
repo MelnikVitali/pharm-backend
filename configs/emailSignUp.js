@@ -4,6 +4,6 @@ module.exports = (email, token) => ({
     subject: 'Ссылка для активации аккаунта',
     text:
         'Пожалуйста, нажмите на данную ссылку, чтобы активировать свой аккаунт\n\n'
-        + `${process.env.CLIENT_URL}/email-activation/${token}\n\n`
+        + `${process.env.CLIENT_URL}/email-activation?token=${token}\n\n`
         + 'Если вы не запрашивали это, игнорируйте это письмо.\n',
 });

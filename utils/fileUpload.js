@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path')
 
+const uploadUrls = require('./../constans/uploadUrls');
+
 const saveDocuments = async (file) => {
     await fs.writeFile(
-        path.join(__dirname, '/../public/uploads/files', file.originalname),
+        path.join(__dirname, `./../${uploadUrls.fileUploadUrl}`, file.originalname),
         file.buffer,
         (err) => {
             if (err) {

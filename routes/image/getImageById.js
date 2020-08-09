@@ -1,32 +1,34 @@
+const passport = require("passport");
+
 const Image = require('../../models/Image');
 
 module.exports = (app) => {
-    app.get('/images/:id', async (req, res) => {
-        try {
-            const result = await Image.findById(req.params.id);
+    app.get('/images/:id',
+        passport.authenticate("jwt", { session: false }),
+        async (req, res) => {
+            try {
+                const result = await Image.findById(req.params.id);
 
-            if (result === null) {
-                const errorMessage = `Image with _id: ${req.params.id} not found!`;
-                console.error(errorMessage);
+                if (result === null) {
+                    const errorMessage = `Image with _id: ${req.params.id} not found!`;
+                    console.error(errorMessage);
 
-                return res
+                    return res
+                        .status(400)
+                        .json({
+                            status: 'Error',
+                            error: errorMessage
+                        });
+                }
+
+                res.send({
+                    status: 'Success',
+                    result: result
+                });
+            } catch (err) {
+                res
                     .status(400)
-                    .json({
-                        status: 'Error',
-                        error: errorMessage
-                    });
+                    .send({ error: 'Error while getting  image' });
             }
-
-            res.send({
-                status: 'Success',
-                result: result
-            });
-        } catch (err) {
-            res.send({
-                status: 'Error',
-                message: err
-            });
-        }
-
-    });
+        });
 };
