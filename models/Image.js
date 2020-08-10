@@ -11,7 +11,6 @@ const imageSchema = new Schema({
     },
     base64: {
         type: String,
-        required: true
     }
 });
 

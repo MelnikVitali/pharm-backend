@@ -5,10 +5,12 @@ const authHelper = require('../../helpers/authHelper');
 
 
 module.exports = async (req, res) => {
+    let payload;
+
     try {
         const refreshToken = req.cookies.refreshToken;
 
-        let payload = jwt.verify(refreshToken, process.env.TOKEN_SECRET);
+        payload = jwt.verify(refreshToken, process.env.TOKEN_SECRET);
 
         if (payload.type !== 'refresh') {
             return res

@@ -34,7 +34,7 @@ const resizeAndSaveImages = async (file) => {
         originalName: file.originalname,
         isImage: true,
         isRejected: false,
-        base64: new Buffer(file, 'binary').toString('base64')
+        base64: Buffer.from(file.buffer, 'binary').toString('base64')
     });
 };
 
