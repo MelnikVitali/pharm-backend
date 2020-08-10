@@ -7,7 +7,7 @@ const uploadUrls = require('../../constans/uploadUrls');
 
 module.exports = (app) => {
     app.delete('/pictures/:id',
-        passport.authenticate("jwt", { session: false }),
+        // passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             try {
                 const image = await Image.findById(req.params.id);
