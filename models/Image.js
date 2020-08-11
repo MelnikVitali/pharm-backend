@@ -11,6 +11,10 @@ const imageSchema = new Schema({
     },
     base64: {
         type: String,
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 
