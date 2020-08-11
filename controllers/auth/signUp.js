@@ -70,14 +70,12 @@ module.exports = async (req, res) => {
                             process.env.TOKEN_SECRET,
                             { expiresIn: tokens.accessEmailConfirm.expiresIn },
                             async (err, token) => {
-                                await transporter.sendMail(emailSignUp(email, token), (error, response) => {
+                                await transporter.sendMail(emailSignUp(email, token, req.headers.origin), (error, response) => {
                                     if (error) {
                                         return res
                                             .status(400)
                                             .json({ errorSignUp: error.message })
                                     } else {
-                                        console.log('here is the res: ', response);
-
                                         res
                                             .status(200)
                                             .json({

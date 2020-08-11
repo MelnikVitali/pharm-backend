@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
                     .json({ error: 'Reset password link error' });
             }
 
-            await transporter.sendMail(emailForgotPassword(email, token), (error) => {
+            await transporter.sendMail(emailForgotPassword(email, token, req.headers.origin), (error) => {
                 if (error) {
                     return res
                         .status(400)
