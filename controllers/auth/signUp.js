@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
                                     if (error) {
                                         return res
                                             .status(400)
-                                            .json({ errorSignUp: error.message })
+                                            .json({ error: error.message })
                                     } else {
                                         res
                                             .status(200)
@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
                     } catch (e) {
                         return res
                             .status(400)
-                            .json({ errorSignUp: 'Произошла ошибка при создании токена' });
+                            .json({ error: 'Произошла ошибка при создании токена' });
                     }
                 });
             });
