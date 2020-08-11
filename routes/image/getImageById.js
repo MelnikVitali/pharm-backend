@@ -4,7 +4,7 @@ const Image = require('../../models/Image');
 
 module.exports = (app) => {
     app.get('/pictures/:id',
-        // passport.authenticate("jwt", { session: false }),
+        passport.authenticate("jwt", { session: false }),
         async (req, res) => {
             try {
                 const result = await Image.findById(req.params.id);
