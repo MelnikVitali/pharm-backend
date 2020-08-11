@@ -16,9 +16,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BogdanLyamzin/pharm-backend/issues"
+    "url": "https://github.com/MelnikVitali/pharm-backend"
   },
-  "homepage": "https://github.com/BogdanLyamzin/pharm-backend#readme",
+  "homepage": "https://github.com/MelnikVitali/pharm-backend#readme",
   "dependencies": {
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
