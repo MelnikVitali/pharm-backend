@@ -39,9 +39,8 @@ const facebookLogin = async (req, res) => {
                 return res
                     .status(400)
                     .json({
-                        error:
-                            +'В аккаунте Facebook не найден Ваш email.\n\n'
-                            + 'Пожалуйста пройдите регистрацию на сайте, либо выполните вход через Google!'
+                        error: 'В аккаунте Facebook не найден Ваш email.\n\nПожалуйста пройдите регистрацию на сайте, либо выполните вход через Google!'
+
                     });
             }
 
