@@ -18,7 +18,7 @@ const saveDocuments = async (file) => {
     const extension = file.originalname.split('.').pop();
 
     return Promise.resolve({
-        fileName: file.originalname,
+        name: file.originalname,
         originalName: file.originalname,
         fileType: extension,
         isImage: false,

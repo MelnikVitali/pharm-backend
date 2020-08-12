@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const fileSchema = new Schema({
-    fileName: {
+    name: {
         type: String,
         trim: true,
         required: [true, 'The file name must be specified.']

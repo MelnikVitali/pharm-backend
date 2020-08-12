@@ -26,7 +26,6 @@ const editMenuItem = require('./menus/menuItems/editMenuItem');
 const deleteMenuItem = require('./menus/menuItems/deleteMenuItem');
 
 //Content
-const fileUploadPage = require('./filesUpload/fileUploadPages');
 const addContent = require('./filesUpload/addContent');
 const getAllContent = require('./filesUpload/getAllContent');
 
@@ -77,7 +76,6 @@ module.exports = app => {
     deleteMenuItem(app);
 
     //Content
-    fileUploadPage(app);
     addContent(app);
     getAllContent(app);
 

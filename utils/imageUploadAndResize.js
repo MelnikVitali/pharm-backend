@@ -28,7 +28,7 @@ const resizeAndSaveImages = async (file) => {
         .toBuffer()
 
     return Promise.resolve({
-        imageName: `${newFileName}.webp`,
+        name: `${newFileName}.webp`,
         originalName: file.originalname,
         isImage: true,
         isRejected: false,
