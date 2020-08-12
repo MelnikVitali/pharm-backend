@@ -62,7 +62,7 @@ const socialAuth = (res, User, name, email) => {
                 });
         } else if (user) {
             console.log(' email 3', email);
-            const { _id, name, email } = user;
+            const { _id, name } = user;
 
             const tokens = updateTokens(_id, name);
 
@@ -73,7 +73,7 @@ const socialAuth = (res, User, name, email) => {
             res.json({
                 status: "Success",
                 accessToken: tokens.accessToken,
-                user: { _id, name, email }
+                user: { _id, name }
             });
         } else {
             console.log(' email 4', email);
