@@ -34,7 +34,7 @@ const generatorRefreshToken = (userName) => {
 
 const replaceDbRefreshToken = (tokenId, userId) => {
     Token
-        .findOne({ userId })
+        .findOneAndRemove({ userId })
         .exec()
         .then(() => Token
             .create({ tokenId, userId })

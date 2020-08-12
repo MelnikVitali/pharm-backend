@@ -34,6 +34,17 @@ const facebookLogin = async (req, res) => {
         .then(response => {
             const { email, name } = response;
 
+            if (!email) {
+
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            +'В аккаунте Facebook не найден Ваш email.\n\n'
+                            + 'Пожалуйста пройдите регистрацию на сайте, либо выполните вход через Google!'
+                    });
+            }
+
             return authHelper.socialAuth(res, User, name, email);
         });
 };
