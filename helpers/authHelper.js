@@ -65,6 +65,8 @@ const socialAuth = (res, User, name, email) => {
 
             res.cookie('refreshToken', tokens.refreshToken);
 
+            user.updateOne({ confirmed: true }).exec();
+
             res.json({
                 status: "Success",
                 accessToken: tokens.accessToken,
