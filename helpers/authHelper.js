@@ -33,16 +33,20 @@ const generatorRefreshToken = (userName) => {
 };
 
 const replaceDbRefreshToken = (tokenId, userId) => {
-    Token.findOne({ userId })
+    return Token
+        .findOne({ userId })
         .exec()
-        .then(() => Token.create({ tokenId, userId }));
+        .then(() => Token
+            .create({ tokenId, userId })
+            .exec()
+        );
 };
 
-const updateTokens = (userId, userName) => {
+const updateTokens = async (userId, userName) => {
     const accessToken = generatorAccessToken(userId, userName);
     const refreshToken = generatorRefreshToken(userName);
 
-    replaceDbRefreshToken(refreshToken.id, userId);
+    await replaceDbRefreshToken(refreshToken.id, userId);
 
     return {
         accessToken,
@@ -51,32 +55,28 @@ const updateTokens = (userId, userName) => {
 };
 
 const socialAuth = (res, User, name, email) => {
-    console.log(' email 1', email);
-    User.findOne({ email }).exec((err, user) => {
+    return User.findOne({ email }).exec((err, user) => {
         if (err) {
-            console.log(' email 2', email);
             return res
                 .status(400)
                 .json({
                     error: 'Something went wrong...(User.findOne)'
                 });
         } else if (user) {
-            console.log(' email 3', email);
             const { _id, name } = user;
 
             const tokens = updateTokens(_id, name);
 
             res.cookie('refreshToken', tokens.refreshToken);
 
-            user.updateOne({ confirmed: true }).exec();
+            user.updateOne({ confirmed: true });
 
-            res.json({
+            return res.json({
                 status: "Success",
                 accessToken: tokens.accessToken,
                 user: { _id, name }
             });
         } else {
-            console.log(' email 4', email);
             const password = email + process.env.TOKEN_SECRET;
 
             const newUser = new User({
@@ -91,7 +91,7 @@ const socialAuth = (res, User, name, email) => {
                     return res
                         .status(400)
                         .json({
-                            error: 'Something went wrong...(newUser.save)', newUser
+                            error: 'Something went wrong...(newUser.save)'
                         });
                 }
 
@@ -101,7 +101,7 @@ const socialAuth = (res, User, name, email) => {
 
                 const { _id, name, email } = newUser;
 
-                res.json({
+                return res.json({
                     status: "Success",
                     accessToken: tokens.accessToken,
                     user: { _id, name, email }
