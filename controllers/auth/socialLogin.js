@@ -27,7 +27,8 @@ const facebookLogin = (req, res) => {
     const { userID, accessToken } = req.body;
     console.log('req.body', req.body);
     // const urlGraphFacebook = `https://graph.facebook.com/v2.11/${userID}/?fields=name,email,id&access_token=${accessToken}`;
-    const urlGraphFacebook = `https://graph.facebook.com/me/?id,name,email,birthday&access_token=${accessToken}`;
+    const urlGraphFacebook = `https://graph.facebook.com/${userID}/?fields=birthday,email,hometown
+    &access_token=${accessToken}`;
 
     fetch(urlGraphFacebook, { method: 'GET' })
         .then(response => response.json())
