@@ -33,7 +33,7 @@ const generatorRefreshToken = (userName) => {
 };
 
 const replaceDbRefreshToken = (tokenId, userId) => {
-    Token.findOneAndRemove({ userId })
+    Token.findOne({ userId })
         .exec()
         .then(() => Token.create({ tokenId, userId }));
 };
@@ -87,7 +87,7 @@ const socialAuth = (res, User, name, email) => {
                     return res
                         .status(400)
                         .json({
-                            error: 'Something went wrong...(newUser.save)'
+                            error: 'Something went wrong...(newUser.save)', newUser
                         });
                 }
 
