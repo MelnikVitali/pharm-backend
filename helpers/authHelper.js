@@ -51,14 +51,17 @@ const updateTokens = (userId, userName) => {
 };
 
 const socialAuth = (res, User, name, email) => {
+    console.log(' email 1', email);
     User.findOne({ email }).exec((err, user) => {
         if (err) {
+            console.log(' email 2', email);
             return res
                 .status(400)
                 .json({
                     error: 'Something went wrong...(User.findOne)'
                 });
         } else if (user) {
+            console.log(' email 3', email);
             const { _id, name, email } = user;
 
             const tokens = updateTokens(_id, name);
@@ -73,6 +76,7 @@ const socialAuth = (res, User, name, email) => {
                 user: { _id, name, email }
             });
         } else {
+            console.log(' email 4', email);
             const password = email + process.env.TOKEN_SECRET;
 
             const newUser = new User({

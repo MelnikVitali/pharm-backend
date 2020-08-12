@@ -31,7 +31,7 @@ const facebookLogin = (req, res) => {
         .then(response => response.json())
         .then(response => {
             const { email, name } = response;
-
+            console.log('response', response);
             authHelper.socialAuth(res, User, name, email);
         });
 };
