@@ -56,7 +56,7 @@ const socialAuth = (res, User, name, email) => {
             return res
                 .status(400)
                 .json({
-                    error: 'Something went wrong...'
+                    error: 'Something went wrong...(User.findOne)'
                 });
         } else if (user) {
             const { _id, name, email } = user;
@@ -87,7 +87,7 @@ const socialAuth = (res, User, name, email) => {
                     return res
                         .status(400)
                         .json({
-                            error: 'Something went wrong...'
+                            error: 'Something went wrong...(newUser.save)'
                         });
                 }
 
