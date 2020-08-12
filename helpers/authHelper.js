@@ -33,7 +33,7 @@ const generatorRefreshToken = (userName) => {
 };
 
 const replaceDbRefreshToken = (tokenId, userId) => {
-    return Token
+    Token
         .findOne({ userId })
         .exec()
         .then(() => Token
@@ -42,11 +42,11 @@ const replaceDbRefreshToken = (tokenId, userId) => {
         );
 };
 
-const updateTokens = async (userId, userName) => {
+const updateTokens = (userId, userName) => {
     const accessToken = generatorAccessToken(userId, userName);
     const refreshToken = generatorRefreshToken(userName);
 
-    await replaceDbRefreshToken(refreshToken.id, userId);
+    replaceDbRefreshToken(refreshToken.id, userId);
 
     return {
         accessToken,
