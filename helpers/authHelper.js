@@ -38,7 +38,6 @@ const replaceDbRefreshToken = (tokenId, userId) => {
         .exec()
         .then(() => Token
             .create({ tokenId, userId })
-            .exec()
         );
 };
 
@@ -67,15 +66,15 @@ const socialAuth = (res, User, name, email) => {
 
             const tokens = updateTokens(_id, name);
 
-            res.cookie('refreshToken', tokens.refreshToken);
-
             user.updateOne({ confirmed: true });
 
-            return res.json({
-                status: "Success",
-                accessToken: tokens.accessToken,
-                user: { _id, name }
-            });
+            return res
+                .cookie('refreshToken', tokens.refreshToken)
+                .json({
+                    status: "Success",
+                    accessToken: tokens.accessToken,
+                    user: { _id, name },
+                });
         } else {
             const password = email + process.env.TOKEN_SECRET;
 
@@ -97,11 +96,11 @@ const socialAuth = (res, User, name, email) => {
 
                 const tokens = updateTokens(data._id, data.name);
 
-                res.cookie('refreshToken', tokens.refreshToken);
-
                 const { _id, name, email } = newUser;
 
-                return res.json({
+                return res
+                    .cookie('refreshToken', tokens.refreshToken)
+                    .json({
                     status: "Success",
                     accessToken: tokens.accessToken,
                     user: { _id, name, email }
