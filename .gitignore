@@ -10,4 +10,5 @@ package-lock.json
 *.xls
 *.xlsx
 .env
+.package-lock.json
 
