@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const uuid = require('uuid').v4;
 
 const validateLoginInput = require('../../utils/validation/login');
 const authHelper = require('../../helpers/authHelper');
@@ -39,16 +40,18 @@ module.exports = async (req, res) => {
             if (isMatch) {
                 const { _id, name, email } = user;
 
-                const tokens = await authHelper.updateTokens(_id, name);
+                const deviceId = uuid();
 
-                res.cookie('refreshToken', tokens.refreshToken, { sameSite: true });
+                const tokens = await authHelper.updateTokens(_id, name, deviceId);
+
+                await res.cookie('refreshToken', tokens.refreshToken);
 
                 return res
                     .status(200)
                     .json({
                         status: 'Success',
                         accessToken: tokens.accessToken,
-                        user: { _id, name, email }
+                        user: { _id, name, email, deviceId }
                     });
             } else {
                 errors.error = "Неверный логин или пароль"

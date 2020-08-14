@@ -2,16 +2,16 @@ const Token = require('../../models/login/Token');
 
 module.exports = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, deviceId } = req.body;
 
-        const token = await Token.findOneAndDelete({ userId }).exec();
+        const token = await Token.findOneAndDelete({ userId, deviceId }).exec();
 
         if (token === null) {
             return res
-                .status(400)
+                .status(401)
                 .json({
                     status: 'Error',
-                    message: 'Invalid delete token!'
+                    message: 'Токен не найден'
                 });
         }
 
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
 
     } catch (err) {
         return res
-            .status(400)
+            .status(401)
             .send({ error: "Не удалось удалить токен" });
     }
 };

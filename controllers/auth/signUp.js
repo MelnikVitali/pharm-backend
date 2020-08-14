@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
                                             .status(400)
                                             .json({ error: error.message })
                                     } else {
-                                        res
+                                        return res
                                             .status(200)
                                             .json({
                                                 message: `Письмо подтверждения регистрации отправлено на указанный email : < ${email} >.\n\n` +

@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 
             User.findOne({ email }).exec((error, user) => {
                 if (error) {
-                    console.log("Error in signup while account activation: ", error);
+                    console.error("Error in signup while account activation: ", error);
 
                     return res
                         .status(400)

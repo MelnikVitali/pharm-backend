@@ -41,9 +41,7 @@ module.exports = async (req, res) => {
                             return res
                                 .json({ errorSignUp: error.message })
                         } else {
-                            console.log('here is the res: ', response);
-
-                            res.status(200)
+                           return  res.status(200)
                                 .json({
                                     message: `Письмо повторной подтверждения регистрации отправлено на указанный email : < ${email} >.\n\n` +
                                         ' Для входа в аккаунт, пожалуйста активируйте свою учетную запись!'
