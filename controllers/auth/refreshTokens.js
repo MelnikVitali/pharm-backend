@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
 
         if (payload.type !== 'refresh') {
             return res
+                .clearCookie('refreshToken')
                 .status(401)
                 .json({
                     status: 'Error',
@@ -23,6 +24,7 @@ module.exports = async (req, res) => {
     } catch (err) {
         if (err instanceof jwt.TokenExpiredError) {
             return res
+                .clearCookie('refreshToken')
                 .status(401)
                 .json({
                     status: 'Error',

@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
 
         if (token === null) {
             return res
-                .status(400)
+                .status(401)
                 .json({
                     status: 'Error',
                     message: 'Токен не найден'
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
 
     } catch (err) {
         return res
-            .status(400)
+            .status(401)
             .send({ error: "Не удалось удалить токен" });
     }
 };
