@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
                 });
         } else if (err instanceof jwt.JsonWebTokenError) {
             return res
+                .clearCookie('refreshToken')
                 .status(401)
                 .json({
                     status: 'Error',
@@ -39,9 +40,9 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const token = await Token.findOne({ tokenId: payload.id }).exec();
+        const token = await Token.findOne({ tokenId: payload.id, deviceId: payload.deviceId }).exec();
 
-        if (token === null) {
+        if (!token) {
             return res
                 .status(401)
                 .json({
@@ -50,18 +51,20 @@ module.exports = async (req, res) => {
                 });
         }
 
-        const newAccessToken = authHelper.generatorAccessToken(token.userId, payload.name);
+        const newAccessToken = authHelper.generatorAccessToken(token.userId, payload.name, token.deviceId);
 
-        return res.json({
-            status: "Success",
-            accessToken: newAccessToken
-        });
+        return res
+            .status(200)
+            .json({
+                status: "Success",
+                accessToken: newAccessToken
+            });
     } catch (err) {
         return res
-            .status(401).json({
+            .status(401)
+            .json({
                 status: 'Error',
                 message: err.message
             });
     }
 };
-

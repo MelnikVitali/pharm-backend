@@ -5,9 +5,10 @@ const { tokens } = require('../configs/jwtTokens').jwt;
 
 const Token = require('../models/login/Token');
 
-const generatorAccessToken = (userId, userName) => {
+const generatorAccessToken = (userId, userName, deviceId) => {
     const payload = {
         userId,
+        deviceId,
         name: userName,
         type: tokens.access.type,
     };
@@ -17,9 +18,10 @@ const generatorAccessToken = (userId, userName) => {
     return jwt.sign(payload, process.env.TOKEN_SECRET, options);
 };
 
-const generatorRefreshToken = (userName) => {
+const generatorRefreshToken = (userName, deviceId) => {
     const payload = {
         id: uuid(),
+        deviceId,
         name: userName,
         type: tokens.refresh.type
     };
@@ -32,20 +34,20 @@ const generatorRefreshToken = (userName) => {
     };
 };
 
-const replaceDbRefreshToken = (tokenId, userId) => {
-    Token
-        .findOneAndRemove({ userId })
+const replaceDbRefreshToken = (tokenId, userId, deviceId) => {
+    return Token
+        .findOneAndRemove({ userId, deviceId })
         .exec()
         .then(() => Token
-            .create({ tokenId, userId })
+            .create({ tokenId, userId, deviceId })
         );
 };
 
-const updateTokens = (userId, userName) => {
-    const accessToken = generatorAccessToken(userId, userName);
-    const refreshToken = generatorRefreshToken(userName);
+const updateTokens = (userId, userName, deviceId) => {
+    const accessToken = generatorAccessToken(userId, userName, deviceId);
+    const refreshToken = generatorRefreshToken(userName, deviceId);
 
-    replaceDbRefreshToken(refreshToken.id, userId);
+    replaceDbRefreshToken(refreshToken.id, userId, deviceId);
 
     return {
         accessToken,
@@ -62,9 +64,11 @@ const socialAuth = (res, User, name, email) => {
                     error: 'Something went wrong...(User.findOne)'
                 });
         } else if (user) {
-            const { _id, name } = user;
+            const { _id, name, email } = user;
 
-            const tokens = updateTokens(_id, name);
+            const deviceId = uuid();
+
+            const tokens = updateTokens(_id, name, deviceId);
 
             user.updateOne({ confirmed: true });
 
@@ -73,7 +77,7 @@ const socialAuth = (res, User, name, email) => {
                 .json({
                     status: "Success",
                     accessToken: tokens.accessToken,
-                    user: { _id, name },
+                    user: { _id, name, email, deviceId },
                 });
         } else {
             const password = email + process.env.TOKEN_SECRET;
@@ -94,17 +98,19 @@ const socialAuth = (res, User, name, email) => {
                         });
                 }
 
-                const tokens = updateTokens(data._id, data.name);
+                const deviceId = uuid();
+
+                const tokens = updateTokens(data._id, data.name, deviceId);
 
                 const { _id, name, email } = newUser;
 
                 return res
                     .cookie('refreshToken', tokens.refreshToken)
                     .json({
-                    status: "Success",
-                    accessToken: tokens.accessToken,
-                    user: { _id, name, email }
-                });
+                        status: "Success",
+                        accessToken: tokens.accessToken,
+                        user: { _id, name, email, deviceId }
+                    });
             });
         }
     });
