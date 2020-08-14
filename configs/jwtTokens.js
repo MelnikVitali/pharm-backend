@@ -15,7 +15,7 @@ module.exports = {
             },
             refresh: {
                 type: 'refresh',
-                expiresIn: '12h' //12h
+                expiresIn: '3m' //12h
             },
         },
     },
