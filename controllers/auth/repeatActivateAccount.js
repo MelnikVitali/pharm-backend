@@ -12,7 +12,6 @@ module.exports = async (req, res) => {
         const { token } = req.body;
 
         if (token) {
-            console.log('token ==>', token);
             const decoded = await jwt.decode(token);
 
             const user = await User.findOne({ email: decoded.email }).exec();

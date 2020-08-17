@@ -1,7 +1,7 @@
-//link to https://console.cloud.google.com/apis/credentials
+//See settings in https://console.cloud.google.com/apis/credentials
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-//Link to https://developers.facebook.com/
+//See settings in  https://developers.facebook.com/
 const fetch = require('node-fetch');
 
 const authHelper = require('../../helpers/authHelper');
