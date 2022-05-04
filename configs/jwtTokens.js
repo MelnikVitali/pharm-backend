@@ -11,11 +11,11 @@ module.exports = {
             },
             access: {
                 type: 'access',
-                expiresIn: '20m' //20m
+                expiresIn: '1m' //20m
             },
             refresh: {
                 type: 'refresh',
-                expiresIn: '12h' //12h
+                expiresIn: '2m' //12h
             },
         },
     },
