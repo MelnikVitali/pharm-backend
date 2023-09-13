@@ -27,6 +27,10 @@ app.use(cookieParser());
 
 app.use(express.static(__dirname + '/public'));
 
+app.get('/', (req, res) => {
+    res.sendFile('index.html', { root: path.join(__dirname, 'public') });
+});
+
 const db = process.env.DB_CONNECT;
 
 mongoose.connect(db, {
@@ -37,7 +41,7 @@ mongoose.connect(db, {
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error('Connection error:', err)
+    console.error('Connection error:', err);
 });
 
 mongoose.connection.once('open', () => {
