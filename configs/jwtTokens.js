@@ -7,11 +7,11 @@ module.exports = {
             },
             accessForgotPassword: {
                 type: 'access',
-                expiresIn: '1h' //1h
+                expiresIn: '3h' //3h
             },
             access: {
                 type: 'access',
-                expiresIn: '20m' //20m
+                expiresIn: '12h' //12h
             },
             refresh: {
                 type: 'refresh',
