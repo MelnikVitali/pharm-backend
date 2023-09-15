@@ -11,12 +11,12 @@ module.exports = {
             },
             access: {
                 type: 'access',
-                expiresIn: '12h' //12h
+                expiresIn: '15s' //20m
             },
             refresh: {
                 type: 'refresh',
-                expiresIn: '12h' //12h
+                expiresIn: '2m' //12h
             },
         },
-    },
+    }
 };
