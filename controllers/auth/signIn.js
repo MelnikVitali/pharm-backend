@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
 
                 const tokens = await authHelper.updateTokens(_id, name, deviceId);
 
-                await res.cookie('refreshToken', tokens.refreshToken);
+                await res.cookie('refreshToken', tokens.refreshToken, { domain: ['.pharm-client.vercel.app/', '.localhost:3000'], path: '/login', secure: true });
 
                 return res
                     .status(200)
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
                         user: { _id, name, email, deviceId }
                     });
             } else {
-                errors.error = "Неверный логин или пароль"
+                errors.error = "Неверный логин или пароль";
 
                 return res
                     .status(400)
