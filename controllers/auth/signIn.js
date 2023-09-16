@@ -43,8 +43,9 @@ module.exports = async (req, res) => {
                 const deviceId = uuid();
 
                 const tokens = await authHelper.updateTokens(_id, name, deviceId);
+                console.log(process.env.NODE_ENV === "production");
 
-                await res.cookie('refreshToken', tokens.refreshToken, { domain: ['.pharm-client.vercel.app/', '.localhost:3000'], path: '/login', secure: true });
+                await res.cookie('refreshToken', tokens.refreshToken, { domain: process.env.NODE_ENV === "production" ? '.vercel.app' : '.localhost', path: '/login', sameSite: false, });
 
                 return res
                     .status(200)
