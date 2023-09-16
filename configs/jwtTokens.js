@@ -11,7 +11,7 @@ module.exports = {
             },
             access: {
                 type: 'access',
-                expiresIn: '45m' //45m
+                expiresIn: '15s' //45m
             },
             refresh: {
                 type: 'refresh',
